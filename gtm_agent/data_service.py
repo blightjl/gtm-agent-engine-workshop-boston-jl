@@ -16,8 +16,16 @@ __all__ = [
     "get_offering", "get_prospect_record", "update_prospect_info",
     "fetch_engagement_history", "fetch_account_details", "fetch_tech_stack",
     "get_profile_from_db", "save_profile_to_db",
-    "get_rep",
+    "get_rep", "redact_prospect_record",
 ]
+
+PROSPECT_PROFILE_FIELDS = (
+    "name",
+    "email",
+    "annual_revenue",
+    "enrichment_source",
+    "disqualified",
+)
 
 # Built prospect profiles are cached in memory (keyed by prospect_id) so repeat
 # lookups within a run are served without rebuilding.
@@ -34,6 +42,11 @@ def get_offering(offering_id):
 def get_prospect_record(prospect_id):
     "Return the source prospect record for prospect_id, or None if not found."
     return PROSPECTS.get(prospect_id)
+
+
+def redact_prospect_record(record):
+    "Return the allow-listed fields safe to expose from a prospect record."
+    return {key: record[key] for key in PROSPECT_PROFILE_FIELDS if key in record}
 
 
 def get_rep(rep):
